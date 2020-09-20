@@ -18,16 +18,35 @@ namespace Pr2S3
                 compStream.WriteByte((byte)theByte);
                 theByte = sourceFile.ReadByte();
             }
-            sourceFile.Close();
-            destFile.Close();
+
+            compStream.Close();
         }
 
+        static void UncompressFile(string InFilename, string OutFilename)
+        {
+            FileStream sourceFile = File.OpenRead(InFilename);
+            FileStream destFile = File.Create(OutFilename);
+            GZipStream compStream = new GZipStream(sourceFile, CompressionMode.Decompress);
+
+            int theByte = compStream.ReadByte();
+            while (theByte != -1)
+            {
+                destFile.WriteByte((byte)theByte);
+                theByte = compStream.ReadByte();
+            }
+
+            compStream.Close();
+        }
 
         static void Main(string[] args)
         {
             Console.WriteLine("Starting to compress file \nMmmmm\nMmmmmmm");
             CompressFile("C:\\All\\newfile.txt", "C:\\All\\newfile.txt.gz");
             Console.WriteLine("Compression done");
+            Console.WriteLine("Oh yes, decompression. Let's do it");
+            Console.WriteLine("Mmmmmmmm \nMmmmmMMmMmMm\nMMmmmmmMmm");
+            UncompressFile("C:\\All\\newfile.txt.gz", "C:\\All\\newfile.txt.test");
+            Console.WriteLine("Decompression done. You are welcome. Goodbye");
         }
     }
 }
